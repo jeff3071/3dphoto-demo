@@ -20,7 +20,7 @@ def repaint_image(image: Image) -> Image:
     print('start')
     start = time.time()
     response = requests.post(
-        f"{os.environ['inpaint3d_server']}/uploadimage/",
+        f"{os.environ['INPAINT3D_SERVER']}/uploadimage/",
         files=files,
     )
     end = time.time()
