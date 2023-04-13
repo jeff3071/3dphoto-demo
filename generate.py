@@ -29,8 +29,8 @@ def repaint_image(image: Image) -> Image:
     return response.content
 
 def image_resize(_image, image_height, image_width):
-    max_width = 720
-    max_height = 720
+    max_width = 640
+    max_height = 640
     if image_width / image_height > max_width / max_height:
         new_image = _image.resize((max_width, int(image_height * max_width / image_width)))
     else:
@@ -39,7 +39,7 @@ def image_resize(_image, image_height, image_width):
 
 
 st.set_page_config(layout="wide", page_title="3d photo generator")
-bg_image = st.file_uploader("Background image:", type=["jpg"])
+bg_image = st.file_uploader("Background image:", type=["jpg", "png", "jpeg"])
 st.markdown("\n")
 col1, col2 = st.columns(2)
 
@@ -50,11 +50,11 @@ if bg_image is not None:
     resize_image = image_resize(image_upload, image.shape[0], image.shape[1])
     with col1:
         st.image(resize_image, caption="Original image")
-        
-    result_video = repaint_image(resize_image)
-    print('get result')
-    with col2:
-        st.video(result_video, format="video/mp4", start_time=0)
-        st.download_button(label="Download", data=result_video, file_name="result.mp4", mime="video/mp4")
-
-            
+        generate = st.button("Generate")
+    
+    if generate:
+        result_video = repaint_image(resize_image)
+        print('get result')
+        with col2:
+            st.video(result_video, format="video/mp4", start_time=0)
+            st.download_button(label="Download", data=result_video, file_name="result.mp4", mime="video/mp4")
