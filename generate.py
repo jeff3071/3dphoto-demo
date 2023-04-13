@@ -52,8 +52,9 @@ if bg_image is not None:
         st.image(resize_image, caption="Original image")
         
     result_video = repaint_image(resize_image)
-        
+    print('get result')
     with col2:
         st.video(result_video, format="video/mp4", start_time=0)
+        st.download_button(label="Download", data=result_video, file_name="result.mp4", mime="video/mp4")
 
             
