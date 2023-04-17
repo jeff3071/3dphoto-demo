@@ -5,6 +5,7 @@ import requests
 import io
 import os
 import time
+import json
 
 # Download the fixed image
 def convert_image(img: Image) -> bytes:
@@ -13,15 +14,20 @@ def convert_image(img: Image) -> bytes:
     byte_im = buf.getvalue()
     return byte_im
 
-def repaint_image(image: Image) -> Image: 
+def repaint_image(image: Image, effect: str) -> Image: 
     files = {
         'image': ("flower.png", convert_image(image), 'image/png'),
     }
     print('start')
     start = time.time()
+    
+    data = {'params': '{"effect":"'+  effect + '"}'}
+    
+    print(data)
     response = requests.post(
         f"{os.environ['INPAINT3D_SERVER']}/uploadimage/",
-        files=files,
+        data=data,
+        files=files
     )
     end = time.time()
     print(f"{end - start} seconds")
@@ -41,7 +47,7 @@ def image_resize(_image, image_height, image_width):
 st.set_page_config(layout="wide", page_title="3d photo generator")
 bg_image = st.file_uploader("Background image:", type=["jpg", "png", "jpeg"])
 st.markdown("\n")
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([5,2,5])
 
 if bg_image is not None:
     image_upload = Image.open(bg_image)
@@ -50,11 +56,14 @@ if bg_image is not None:
     resize_image = image_resize(image_upload, image.shape[0], image.shape[1])
     with col1:
         st.image(resize_image, caption="Original image")
+        
+    with col2:
+        effect = st.selectbox('選取鏡頭類型', ['circle', 'swing'])
         generate = st.button("Generate")
     
     if generate:
-        result_video = repaint_image(resize_image)
+        result_video = repaint_image(resize_image, effect)
         print('get result')
-        with col2:
+        with col3:
             st.video(result_video, format="video/mp4", start_time=0)
             st.download_button(label="Download", data=result_video, file_name="result.mp4", mime="video/mp4")
